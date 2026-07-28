@@ -7,9 +7,9 @@ import { motion } from 'framer-motion';
 export default function PresensiPage() {
   return (
     <main className="bg-mesh bg-background text-foreground min-h-[100dvh] relative flex flex-col items-center justify-center">
-      {/* Decorative overlays */}
-      <div className="absolute inset-0 bg-background/40 backdrop-blur-[2px] pointer-events-none" />
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none" />
+      {/* Decorative overlays (Optimized for mobile) */}
+      <div className="absolute inset-0 bg-background/60 pointer-events-none" />
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] pointer-events-none" />
 
       <div className="relative z-10 flex flex-col items-center w-full px-4 py-8 md:py-16">
         <motion.div 
@@ -24,7 +24,7 @@ export default function PresensiPage() {
             transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.2 }}
             className="animate-float flex justify-center mb-8"
           >
-            <Image src="/logo.png" alt="Logo Kontingen DIY" width={300} height={200} className="w-40 h-auto md:w-56 drop-shadow-[0_10px_25px_rgba(234,88,12,0.3)] object-contain" priority unoptimized />
+            <Image src="/logo.png" alt="Logo Kontingen DIY" width={300} height={200} className="w-40 h-auto md:w-56 drop-shadow-[0_10px_25px_rgba(234,88,12,0.3)] object-contain" priority />
           </motion.div>
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-4 leading-tight">
             <span className="bg-gradient-to-br from-primary via-primary/80 to-accent bg-clip-text text-transparent drop-shadow-sm filter drop-shadow-lg">

@@ -95,22 +95,31 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Stunning Glassmorphism Utility */
+/* Smooth scrolling for entire page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Stunning Glassmorphism Utility (Optimized for Mobile) */
 .glass {
   background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.3);
+  will-change: transform, opacity;
+  transform: translateZ(0); /* Hardware acceleration */
 }
 
 @media (prefers-color-scheme: light) {
   .glass {
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.05);
   }
 }
 
@@ -128,17 +137,25 @@ body {
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .bg-mesh {
-  background: radial-gradient(at 20% 30%, hsla(28,100%,74%,0.2) 0px, transparent 50%),
-              radial-gradient(at 80% 10%, hsla(189,100%,56%,0.2) 0px, transparent 50%),
-              radial-gradient(at 0% 60%, hsla(355,100%,93%,0.15) 0px, transparent 50%),
-              radial-gradient(at 90% 70%, hsla(340,100%,76%,0.15) 0px, transparent 50%),
-              radial-gradient(at 10% 90%, hsla(22,100%,77%,0.15) 0px, transparent 50%),
-              radial-gradient(at 70% 90%, hsla(242,100%,70%,0.2) 0px, transparent 50%);
-  background-size: 200% 200%;
-  animation: meshGradient 12s ease-in-out infinite alternate;
+  background: radial-gradient(at 20% 30%, hsla(28,100%,74%,0.15) 0px, transparent 50%),
+              radial-gradient(at 80% 10%, hsla(189,100%,56%,0.15) 0px, transparent 50%),
+              radial-gradient(at 0% 60%, hsla(355,100%,93%,0.1) 0px, transparent 50%),
+              radial-gradient(at 90% 70%, hsla(340,100%,76%,0.1) 0px, transparent 50%),
+              radial-gradient(at 10% 90%, hsla(22,100%,77%,0.1) 0px, transparent 50%),
+              radial-gradient(at 70% 90%, hsla(242,100%,70%,0.15) 0px, transparent 50%);
+  background-size: 150% 150%;
+}
+
+/* Only animate gradient on non-touch devices to save mobile battery/GPU */
+@media (hover: hover) and (pointer: fine) {
+  .bg-mesh {
+    animation: meshGradient 15s ease-in-out infinite alternate;
+  }
 }
 
 @media (prefers-color-scheme: dark) {

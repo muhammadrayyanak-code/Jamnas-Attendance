@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String   // hashed password
+  createdAt DateTime @default(now())
+}
+
+model Participant {
+  id              String       @id @default(uuid())
+  nta             String       @unique
+  name            String
+  kwarcab         String
+  regu            String
+  agama           String?
+  ttl             String?
+  asalSekolah     String?
+  noWa            String?
+  alergiMakanan   String?
+  totalPoints     Int          @default(0)
+  attendances     Attendance[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model EventDay {
+  id         String     @id @default(uuid())
+  name       String     // e.g. "Day 1"
+  date       DateTime
+  activities Activity[]
+}
+
+model Activity {
+  id          String       @id @default(uuid())
+  name        String
+  pointValue  Int
+  dayId       String
+  day         EventDay     @relation(fields: [dayId], references: [id])
+  attendances Attendance[]
+}
+
+model Attendance {
+  id            String      @id @default(uuid())
+  participantId String
+  activityId    String
+  timestamp     DateTime    @default(now())
+
+  participant   Participant @relation(fields: [participantId], references: [id])
+  activity      Activity    @relation(fields: [activityId], references: [id])
+
+  @@unique([participantId, activityId])
+}

@@ -24,7 +24,7 @@ export default function RegistrasiPage() {
             transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.2 }}
             className="animate-float flex justify-center mb-8"
           >
-            <Image src="/logo.png" alt="Logo Kontingen DIY" width={300} height={200} className="w-40 h-auto md:w-56 drop-shadow-[0_10px_25px_rgba(234,88,12,0.3)] object-contain" priority />
+            <Image src="/logo.png" alt="Logo Kontingen DIY" width={300} height={200} className="w-40 h-auto md:w-56 drop-shadow-[0_10px_25px_rgba(234,88,12,0.3)] object-contain" priority unoptimized />
           </motion.div>
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-4 leading-tight">
             <span className="bg-gradient-to-br from-primary via-primary/80 to-accent bg-clip-text text-transparent drop-shadow-sm filter drop-shadow-lg">

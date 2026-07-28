@@ -39,8 +39,8 @@ export default function AttendanceWizard() {
     fetch('/api/activities')
       .then(res => res.json())
       .then(data => {
-        setDays(data.days);
-        setActivities(data.activities);
+        setDays(data.days || []);
+        setActivities(data.activities || []);
         setIsLoading(false);
       })
       .catch(() => {

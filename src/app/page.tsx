@@ -1,7 +1,7 @@
 'use client';
 
 import AttendanceWizard from '@/components/AttendanceWizard';
-import { Tent } from 'lucide-react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 
 export default function Home() {
@@ -24,7 +24,7 @@ export default function Home() {
             transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.2 }}
             className="animate-float inline-flex items-center justify-center p-5 bg-background/60 backdrop-blur-xl rounded-full mb-6 shadow-2xl border border-white/20 ring-4 ring-primary/10"
           >
-            <Tent className="w-12 h-12 md:w-16 md:h-16 text-primary drop-shadow-md" />
+            <Image src="/logo.png" alt="Logo Kontingen DIY" width={120} height={120} className="w-16 h-16 md:w-24 md:h-24 drop-shadow-md object-contain" priority />
           </motion.div>
           
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4 leading-tight">

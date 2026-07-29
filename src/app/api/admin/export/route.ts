@@ -48,7 +48,7 @@ export async function GET(request: Request) {
     for (const day of days) {
       const sheetName = day.name.replace(/[\\/*?:[\]]/g, ''); // sanitize sheet name
       const sheet = workbook.addWorksheet(sheetName.substring(0, 31), {
-        views: [{ state: 'frozen', xSplit: 4, ySplit: 1 }]
+        views: [{ state: 'frozen', xSplit: 8, ySplit: 1 }]
       });
 
       // Define columns
@@ -57,6 +57,10 @@ export async function GET(request: Request) {
         { header: 'Nama Lengkap', key: 'name', width: 30 },
         { header: 'Kwarcab', key: 'kwarcab', width: 20 },
         { header: 'Regu', key: 'regu', width: 15 },
+        { header: 'Tanggal Lahir', key: 'ttl', width: 20 },
+        { header: 'Asal Sekolah', key: 'asalSekolah', width: 25 },
+        { header: 'No WA', key: 'noWa', width: 20 },
+        { header: 'Alergi Makanan', key: 'alergiMakanan', width: 20 },
       ];
 
       const activityColumns = day.activities.map(act => ({
@@ -90,7 +94,11 @@ export async function GET(request: Request) {
           no: rowNum++,
           name: p.name,
           kwarcab: p.kwarcab,
-          regu: p.regu
+          regu: p.regu,
+          ttl: p.ttl || '-',
+          asalSekolah: p.asalSekolah || '-',
+          noWa: p.noWa ? `'${p.noWa}` : '-', // prepend quote to prevent scientific notation in excel
+          alergiMakanan: p.alergiMakanan || '-'
         };
 
         // Check attendances for this day

@@ -12,61 +12,65 @@ export async function GET(request: Request) {
   const search = (searchParams.get('search') || '').toLowerCase();
 
   try {
-    const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
-    if (!webhookUrl) {
-       return NextResponse.json({ error: 'Webhook URL not configured' }, { status: 500 });
-    }
-
-    const response = await fetch(`${webhookUrl}?action=dashboard`, { cache: 'no-store' });
-    const data = await response.json();
-
-    let participantsData = data.participants || [];
-    let attendancesData = data.attendances || [];
-    
-    // Fetch activities from local db for mapping names and points
+    // 1. Fetch activities
     const localActivities = await prisma.activity.findMany({
       include: { day: true }
     });
-    
+
     const activitiesMap: Record<string, any> = {};
     localActivities.forEach(act => {
       activitiesMap[act.id] = act;
     });
 
-    // Map attendances to participants
-    participantsData = participantsData.map((p: any) => {
-      const pAttendances = attendancesData.filter((a: any) => a.name === p.name).map((a: any) => {
-         const actInfo = activitiesMap[a.activityId];
-         return {
-            ...a,
-            activityName: actInfo ? actInfo.name : 'Unknown Activity',
-            pointValue: actInfo ? actInfo.pointValue : 0
-         };
+    // 2. Fetch all participants and their attendances
+    const where = search ? {
+      OR: [
+        { name: { contains: search, mode: 'insensitive' as const } },
+        { kwarcab: { contains: search, mode: 'insensitive' as const } },
+        { regu: { contains: search, mode: 'insensitive' as const } }
+      ]
+    } : {};
+
+    const rawParticipants = await prisma.participant.findMany({
+      where,
+      include: {
+        attendances: true
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    // 3. Map attendances with activity info and calculate points
+    const participantsData = rawParticipants.map(p => {
+      const pAttendances = p.attendances.map(a => {
+        const actInfo = activitiesMap[a.activityId];
+        return {
+          ...a,
+          activityName: actInfo ? actInfo.name : 'Unknown Activity',
+          pointValue: actInfo ? actInfo.pointValue : 0
+        };
       });
-      
-      const totalPoints = pAttendances.reduce((sum: number, att: any) => sum + att.pointValue, 0);
-      
+
       return {
         ...p,
         attendances: pAttendances,
-        totalPoints
       };
     });
-    
-    // Apply search filter if needed
-    if (search) {
-      participantsData = participantsData.filter((p: any) => 
-        p.name.toLowerCase().includes(search) ||
-        p.kwarcab.toLowerCase().includes(search) ||
-        p.regu.toLowerCase().includes(search)
-      );
-    }
+
+    const totalParticipants = await prisma.participant.count();
+
+    // Checkins today (attendances created today)
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const todayCheckIns = await prisma.attendance.count({
+      where: {
+        timestamp: { gte: startOfToday }
+      }
+    });
 
     return NextResponse.json({
       participants: participantsData,
       activities: localActivities,
-      attendances: attendancesData,
-      stats: data.stats || { totalParticipants: 0, todayCheckIns: 0 }
+      stats: { totalParticipants, todayCheckIns }
     });
   } catch (error) {
     console.error("Dashboard fetch error:", error);

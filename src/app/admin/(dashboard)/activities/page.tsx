@@ -25,7 +25,7 @@ export default function AdminActivities() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch('/api/activities');
+      const res = await fetch('/api/admin/activities');
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setDays(data.days);

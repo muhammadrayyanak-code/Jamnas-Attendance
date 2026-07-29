@@ -1,10 +1,22 @@
 import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 import { ActivityService } from '@/lib/services/ActivityService';
 import { cookies } from 'next/headers';
 
 async function checkAuth() {
   const cookieStore = await cookies();
   if (!cookieStore.get('admin_token')) throw new Error('Unauthorized');
+}
+
+export async function GET() {
+  try {
+    await checkAuth();
+    const days = await prisma.eventDay.findMany({ orderBy: { date: 'asc' } });
+    const activities = await ActivityService.getAllActivities(false); // Do not filter out future activities
+    return NextResponse.json({ days, activities });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: error.message === 'Unauthorized' ? 401 : 500 });
+  }
 }
 
 export async function POST(request: Request) {

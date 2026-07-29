@@ -10,15 +10,15 @@ export async function POST(request: Request) {
     const isAuthenticated = await AdminService.authenticate(username, password);
 
     if (isAuthenticated) {
-      const cookieStore = await cookies();
-      // Simple cookie based auth for this context
-      cookieStore.set('admin_token', 'authenticated', {
+      const response = NextResponse.json({ success: true });
+      response.cookies.set('admin_token', 'authenticated', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
         path: '/',
         maxAge: 60 * 60 * 24 * 30 // 30 days
       });
-      return NextResponse.json({ success: true });
+      return response;
     } else {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }

@@ -25,7 +25,10 @@ export default function AdminActivities() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch('/api/admin/activities', { credentials: 'same-origin' });
+      const res = await fetch('/api/admin/activities', { 
+        credentials: 'same-origin',
+        cache: 'no-store' 
+      });
       if (res.status === 401) {
         window.location.href = '/admin/login';
         return;

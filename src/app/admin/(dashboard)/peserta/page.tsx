@@ -11,7 +11,10 @@ export default function PesertaPage() {
 
   const fetchPeserta = async (searchQuery = '') => {
     try {
-      const res = await fetch(`/api/admin/peserta?search=${searchQuery}`, { credentials: 'same-origin' });
+      const res = await fetch(`/api/admin/peserta?search=${searchQuery}`, { 
+        credentials: 'same-origin',
+        cache: 'no-store'
+      });
       if (res.status === 401) {
         window.location.href = '/admin/login';
         return;

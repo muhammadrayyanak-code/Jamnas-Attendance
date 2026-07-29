@@ -17,7 +17,6 @@ model Admin {
 
 model Participant {
   id              String       @id @default(uuid())
-  nta             String       @unique
   name            String
   kwarcab         String
   regu            String
@@ -30,6 +29,8 @@ model Participant {
   attendances     Attendance[]
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
+
+  @@unique([name, kwarcab, regu])
 }
 
 model EventDay {
@@ -43,6 +44,7 @@ model Activity {
   id          String       @id @default(uuid())
   name        String
   pointValue  Int
+  startTime   DateTime?
   dayId       String
   day         EventDay     @relation(fields: [dayId], references: [id])
   attendances Attendance[]

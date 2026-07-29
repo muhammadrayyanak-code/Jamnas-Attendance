@@ -5,12 +5,11 @@ export async function POST(req: Request) {
   try {
     const data = await req.json();
 
-    if (!data.nta || !data.name || !data.kwarcab || !data.regu) {
-      return NextResponse.json({ error: 'NTA, Nama, Kwarcab, dan Regu wajib diisi' }, { status: 400 });
+    if (!data.name || !data.kwarcab || !data.regu || !data.ttl || !data.asalSekolah || !data.noWa || !data.alergiMakanan) {
+      return NextResponse.json({ error: 'Semua kolom wajib diisi' }, { status: 400 });
     }
 
     const participant = await ParticipantService.registerParticipant({
-      nta: data.nta,
       name: data.name,
       kwarcab: data.kwarcab,
       regu: data.regu,

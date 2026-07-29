@@ -7,7 +7,7 @@ export async function GET() {
   try {
     await SeedService.seedDaysIfEmpty();
     const days = await EventDayService.getAllDays();
-    const activities = await ActivityService.getAllActivities();
+    const activities = await ActivityService.getAllActivities(true);
     return NextResponse.json({ days, activities });
   } catch (error: any) {
     return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });

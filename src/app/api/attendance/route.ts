@@ -6,13 +6,12 @@ export async function POST(req: Request) {
   try {
     const data = await req.json();
 
-    if (!data.nta || !data.name || !data.kwarcab || !data.regu || !data.activityId) {
+    if (!data.name || !data.kwarcab || !data.regu || !data.activityId) {
       return NextResponse.json({ error: 'Data tidak lengkap' }, { status: 400 });
     }
 
-    // Use ParticipantService to find or create the participant based on NTA
+    // Use ParticipantService to find or create the participant based on composite key
     const participant = await ParticipantService.findForAttendance(
-      data.nta,
       data.name,
       data.kwarcab,
       data.regu
@@ -63,7 +62,6 @@ export async function POST(req: Request) {
           },
           body: JSON.stringify({
             action: 'attendance',
-            nta: data.nta,
             name: data.name,
             kwarcab: data.kwarcab,
             regu: data.regu,

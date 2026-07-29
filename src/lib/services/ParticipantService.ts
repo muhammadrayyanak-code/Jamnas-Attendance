@@ -14,29 +14,32 @@ export class ParticipantService {
    * Register a new participant (Full Registration Flow)
    */
   static async registerParticipant(data: {
-    nta: string;
     name: string;
     kwarcab: string;
     regu: string;
     agama?: string;
-    ttl?: string;
-    asalSekolah?: string;
-    noWa?: string;
-    alergiMakanan?: string;
+    ttl: string;
+    asalSekolah: string;
+    noWa: string;
+    alergiMakanan: string;
   }) {
     const normName = normalize(data.name);
     const normKwarcab = normalize(data.kwarcab);
     const normRegu = normalize(data.regu);
 
-    // Check if participant already exists based on NTA
+    // Check if participant already exists based on composite key
     let participant = await prisma.participant.findUnique({
       where: {
-        nta: data.nta
+        name_kwarcab_regu: {
+          name: normName,
+          kwarcab: normKwarcab,
+          regu: normRegu
+        }
       }
     });
 
     if (participant) {
-      throw new Error('Peserta dengan NTA ini sudah terdaftar.');
+      throw new Error('Peserta dengan Nama, Kwarcab, dan Regu ini sudah terdaftar.');
     }
 
     participant = await prisma.participant.create({
@@ -55,20 +58,25 @@ export class ParticipantService {
   /**
    * Find participant for Attendance flow
    */
-  static async findForAttendance(nta: string, name: string, kwarcab: string, regu: string) {
+  static async findForAttendance(name: string, kwarcab: string, regu: string) {
     const normName = normalize(name);
     const normKwarcab = normalize(kwarcab);
     const normRegu = normalize(regu);
 
     let participant = await prisma.participant.findUnique({
-      where: { nta }
+      where: {
+        name_kwarcab_regu: {
+          name: normName,
+          kwarcab: normKwarcab,
+          regu: normRegu
+        }
+      }
     });
 
     if (!participant) {
-      // Create on the fly if they haven't registered fully yet, 
-      // but without the full registration details.
+      // Create on the fly if they haven't registered fully yet
       participant = await prisma.participant.create({
-        data: { nta, name: normName, kwarcab: normKwarcab, regu: normRegu, totalPoints: 0 }
+        data: { name: normName, kwarcab: normKwarcab, regu: normRegu, totalPoints: 0 }
       });
     }
 

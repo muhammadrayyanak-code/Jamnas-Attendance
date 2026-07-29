@@ -3,12 +3,19 @@ import { prisma } from '../prisma';
 export class ActivityService {
   /**
    * Get all activities
+   * @param filterUpcoming If true, only returns activities that have already started
    */
-  static async getAllActivities() {
+  static async getAllActivities(filterUpcoming: boolean = false) {
+    const whereClause = filterUpcoming ? {
+      startTime: { lte: new Date() }
+    } : {};
+
     return prisma.activity.findMany({
+      where: whereClause,
       include: { day: true },
       orderBy: [
         { day: { date: 'asc' } },
+        { startTime: 'asc' },
         { name: 'asc' }
       ]
     });

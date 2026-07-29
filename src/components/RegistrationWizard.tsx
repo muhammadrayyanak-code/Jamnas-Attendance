@@ -170,21 +170,7 @@ export default function RegistrationWizard() {
                 <h2 className="text-2xl font-bold mb-6 text-foreground text-center">Identitas Peserta</h2>
                 
                 <div className="space-y-4 mb-8">
-                  <div className="flex flex-col">
-                        <div className="relative">
-                      <input 
-                        {...register('nta', { required: 'Nomor Tanda Anggota (NTA) wajib diisi' })}
-                        id="nta"
-                        className="block px-12 pb-2.5 pt-6 w-full text-base text-foreground bg-background/50 rounded-xl border border-input appearance-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary peer transition-all"
-                        placeholder=" "
-                      />
-                      <label htmlFor="nta" className="absolute text-sm text-muted-foreground duration-300 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] start-12 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-primary pointer-events-none">
-                        Nomor Tanda Anggota (NTA)
-                      </label>
-                      <IdCard className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground peer-focus:text-primary transition-colors z-10 w-5 h-5 pointer-events-none" />
-                    </div>
-                    {errors.nta && <p className="text-destructive text-xs mt-1.5 ml-2 font-medium">{errors.nta.message as string}</p>}
-                  </div>
+
 
                   <div className="flex flex-col">
                     <div className="relative">

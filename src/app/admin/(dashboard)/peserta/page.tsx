@@ -8,6 +8,7 @@ export default function PesertaPage() {
   const [participants, setParticipants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [isExporting, setIsExporting] = useState(false);
 
   const fetchPeserta = async (searchQuery = '') => {
     try {
@@ -44,6 +45,32 @@ export default function PesertaPage() {
     fetchPeserta(search);
   };
 
+  const downloadExcel = async () => {
+    setIsExporting(true);
+    
+    try {
+      const token = localStorage.getItem('admin_token');
+      const res = await fetch(`/api/admin/export-peserta`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Gagal mengunduh file');
+      
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Data_Registrasi_Peserta.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      toast.error('Gagal mengekspor data');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-[70vh]">
@@ -63,6 +90,22 @@ export default function PesertaPage() {
           <h1 className="text-3xl font-extrabold text-foreground drop-shadow-sm">Data Peserta</h1>
           <p className="text-muted-foreground font-medium mt-1">Daftar seluruh peserta dan informasi registrasinya.</p>
         </div>
+        <button
+          onClick={downloadExcel}
+          disabled={isExporting}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg ${
+            isExporting 
+              ? 'bg-muted text-muted-foreground cursor-not-allowed' 
+              : 'bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-105 hover:shadow-primary/20'
+          }`}
+        >
+          {isExporting ? (
+            <div className="w-5 h-5 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin"></div>
+          ) : (
+            <Download className="w-5 h-5" />
+          )}
+          {isExporting ? 'Mengekspor...' : 'Unduh Excel Registrasi'}
+        </button>
       </div>
 
       <div className="glass p-6 rounded-2xl shadow-lg border border-white/10 flex items-center gap-5">

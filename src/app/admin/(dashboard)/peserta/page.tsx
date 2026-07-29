@@ -11,7 +11,11 @@ export default function PesertaPage() {
 
   const fetchPeserta = async (searchQuery = '') => {
     try {
-      const res = await fetch(`/api/admin/peserta?search=${searchQuery}`);
+      const res = await fetch(`/api/admin/peserta?search=${searchQuery}`, { credentials: 'same-origin' });
+      if (res.status === 401) {
+        window.location.href = '/admin/login';
+        return;
+      }
       if (!res.ok) throw new Error('Gagal memuat data peserta');
       const data = await res.json();
       setParticipants(data.participants);

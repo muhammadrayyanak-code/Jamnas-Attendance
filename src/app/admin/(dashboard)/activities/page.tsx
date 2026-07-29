@@ -25,7 +25,11 @@ export default function AdminActivities() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch('/api/admin/activities');
+      const res = await fetch('/api/admin/activities', { credentials: 'same-origin' });
+      if (res.status === 401) {
+        window.location.href = '/admin/login';
+        return;
+      }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setDays(data.days);

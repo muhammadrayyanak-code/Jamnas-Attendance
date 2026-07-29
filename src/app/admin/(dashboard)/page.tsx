@@ -14,7 +14,7 @@ export default function AdminDashboard() {
 
   const fetchDashboard = async (searchQuery = '') => {
     try {
-      const res = await fetch(`/api/admin/dashboard?search=${searchQuery}`);
+      const res = await fetch(`/api/admin/dashboard?search=${searchQuery}`, { credentials: 'same-origin' });
       if (res.status === 401) {
         router.push('/admin/login');
         return;
@@ -44,7 +44,12 @@ export default function AdminDashboard() {
       setIsExporting(true);
       setShowExportMenu(false);
       
-      const res = await fetch(`/api/admin/export?dayId=${dayId}`);
+      const res = await fetch(`/api/admin/export?dayId=${dayId}`, { credentials: 'same-origin' });
+      if (res.status === 401) {
+        toast.error("Sesi telah berakhir. Silakan login kembali.");
+        router.push('/admin/login');
+        return;
+      }
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
         throw new Error(errorData.error || 'Gagal men-generate Excel (Error ' + res.status + ')');

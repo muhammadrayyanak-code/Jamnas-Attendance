@@ -42,41 +42,23 @@ export default function AdminDashboard() {
   const [isExporting, setIsExporting] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
 
-  const downloadExcel = async (dayId: string) => {
-    try {
-      setIsExporting(true);
-      setShowExportMenu(false);
-      
-      const res = await fetch(`/api/admin/export?dayId=${dayId}&t=${Date.now()}`, { 
-        credentials: 'include',
-        cache: 'no-store'
-      });
-      if (res.status === 401) {
-        toast.error("Sesi telah berakhir. Silakan login kembali.");
-        router.push('/admin/login');
-        return;
-      }
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Gagal men-generate Excel (Error ' + res.status + ')');
-      }
-      
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Laporan_Kehadiran_${dayId === 'all' ? 'Semua_Hari' : 'Harian'}.xlsx`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      
-      toast.success('Laporan Excel berhasil diunduh!');
-    } catch (error: any) {
-      toast.error(error.message);
-    } finally {
+  const downloadExcel = (dayId: string) => {
+    setIsExporting(true);
+    setShowExportMenu(false);
+    
+    // Direct navigation is more reliable for file downloads to avoid fetch cookie issues
+    const url = `/api/admin/export?dayId=${dayId}&t=${Date.now()}`;
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    // Reset state after a short delay since we can't track the actual download completion
+    setTimeout(() => {
       setIsExporting(false);
-    }
+    }, 2000);
   };
   if (loading) {
     return (

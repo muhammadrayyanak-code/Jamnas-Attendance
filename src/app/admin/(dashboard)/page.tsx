@@ -15,7 +15,7 @@ export default function AdminDashboard() {
   const fetchDashboard = async (searchQuery = '') => {
     try {
       const res = await fetch(`/api/admin/dashboard?search=${searchQuery}`, { 
-        credentials: 'same-origin',
+        credentials: 'include',
         cache: 'no-store'
       });
       if (res.status === 401) {
@@ -47,8 +47,8 @@ export default function AdminDashboard() {
       setIsExporting(true);
       setShowExportMenu(false);
       
-      const res = await fetch(`/api/admin/export?dayId=${dayId}`, { 
-        credentials: 'same-origin',
+      const res = await fetch(`/api/admin/export?dayId=${dayId}&t=${Date.now()}`, { 
+        credentials: 'include',
         cache: 'no-store'
       });
       if (res.status === 401) {

@@ -26,7 +26,7 @@ export default function AdminActivities() {
   const fetchData = async () => {
     try {
       const res = await fetch('/api/admin/activities', { 
-        credentials: 'same-origin',
+        credentials: 'include',
         cache: 'no-store' 
       });
       if (res.status === 401) {

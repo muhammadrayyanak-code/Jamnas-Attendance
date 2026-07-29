@@ -12,7 +12,7 @@ export default function PesertaPage() {
   const fetchPeserta = async (searchQuery = '') => {
     try {
       const res = await fetch(`/api/admin/peserta?search=${searchQuery}`, { 
-        credentials: 'same-origin',
+        credentials: 'include',
         cache: 'no-store'
       });
       if (res.status === 401) {

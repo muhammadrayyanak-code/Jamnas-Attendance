@@ -15,6 +15,22 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Pembekalan Jamboree Nasional - Kontingen Daerah DIY",
   description: "Sistem Presensi Digital Pembekalan Jamboree Nasional 2026 Kontingen Daerah Daerah Istimewa Yogyakarta",
+  applicationName: "Jamnas Presensi",
+  appleWebApp: {
+    capable: true,
+    title: "Jamnas Presensi",
+    statusBarStyle: "black-translucent",
+  },
+  manifest: "/manifest.json",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#c27a29",
 };
 
 export default function RootLayout({

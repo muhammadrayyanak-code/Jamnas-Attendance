@@ -1,0 +1,21 @@
+{
+  "name": "Jamnas Presensi Kontingen DIY",
+  "short_name": "Jamnas Presensi",
+  "description": "Sistem Presensi Digital Pembekalan Jamboree Nasional 2026 Kontingen Daerah Daerah Istimewa Yogyakarta",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fdfbf7",
+  "theme_color": "#c27a29",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

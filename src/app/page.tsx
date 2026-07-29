@@ -3,6 +3,7 @@
 import AttendanceWizard from '@/components/AttendanceWizard';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import KwarcabLeaderboard from '@/components/KwarcabLeaderboard';
 
 export default function Home() {
   return (
@@ -71,6 +72,8 @@ export default function Home() {
             <p className="text-muted-foreground text-sm font-medium">Check-in harian aktivitas untuk mencatat poin.</p>
           </motion.a>
         </div>
+        
+        <KwarcabLeaderboard />
       </div>
     </main>
   );

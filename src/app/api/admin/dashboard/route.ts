@@ -5,8 +5,10 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(request: Request) {
   const cookieStore = await cookies();
-  if (!cookieStore.get('admin_token')) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const token = cookieStore.get('admin_token');
+  if (!token) {
+    const allCookies = cookieStore.getAll().map(c => c.name).join(', ');
+    return NextResponse.json({ error: `Unauthorized. Server sees cookies: [${allCookies}]` }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);

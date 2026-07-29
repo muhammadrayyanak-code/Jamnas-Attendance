@@ -16,7 +16,11 @@ export default function PesertaPage() {
         cache: 'no-store'
       });
       if (res.status === 401) {
-        window.location.href = '/admin/login';
+        const errorData = await res.json().catch(() => ({}));
+        toast.error(`Sesi berakhir. Server error: ${errorData.error || 'Unknown'}`);
+        setTimeout(() => {
+          window.location.href = '/admin/login';
+        }, 5000);
         return;
       }
       if (!res.ok) throw new Error('Gagal memuat data peserta');

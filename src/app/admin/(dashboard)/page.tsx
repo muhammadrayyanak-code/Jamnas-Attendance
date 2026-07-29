@@ -14,8 +14,9 @@ export default function AdminDashboard() {
 
   const fetchDashboard = async (searchQuery = '') => {
     try {
+      const token = localStorage.getItem('admin_token');
       const res = await fetch(`/api/admin/dashboard?search=${searchQuery}`, { 
-        credentials: 'include',
+        headers: { 'Authorization': `Bearer ${token}` },
         cache: 'no-store'
       });
       if (res.status === 401) {
@@ -42,23 +43,31 @@ export default function AdminDashboard() {
   const [isExporting, setIsExporting] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
 
-  const downloadExcel = (dayId: string) => {
+  const downloadExcel = async (dayId: string) => {
     setIsExporting(true);
     setShowExportMenu(false);
     
-    // Direct navigation is more reliable for file downloads to avoid fetch cookie issues
-    const url = `/api/admin/export?dayId=${dayId}&t=${Date.now()}`;
-    const a = document.createElement('a');
-    a.href = url;
-    a.target = '_blank';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    
-    // Reset state after a short delay since we can't track the actual download completion
-    setTimeout(() => {
+    try {
+      const token = localStorage.getItem('admin_token');
+      const res = await fetch(`/api/admin/export?dayId=${dayId}&t=${Date.now()}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Gagal mengunduh file');
+      
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Data_Peserta_Jamnas_2026.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      toast.error('Gagal mengekspor data');
+    } finally {
       setIsExporting(false);
-    }, 2000);
+    }
   };
   if (loading) {
     return (

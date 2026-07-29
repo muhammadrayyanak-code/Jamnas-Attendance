@@ -4,14 +4,17 @@ import { prisma } from '@/lib/prisma';
 import { ActivityService } from '@/lib/services/ActivityService';
 import { cookies } from 'next/headers';
 
-async function checkAuth() {
+async function checkAuth(request: Request) {
   const cookieStore = await cookies();
-  if (!cookieStore.get('admin_token')) throw new Error('Unauthorized');
+  const token = cookieStore.get('admin_token')?.value || request.headers.get('authorization')?.split(' ')[1];
+  if (!token) {
+    throw new Error('Unauthorized');
+  }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    await checkAuth();
+    await checkAuth(request);
     const days = await prisma.eventDay.findMany({ orderBy: { date: 'asc' } });
     const activities = await ActivityService.getAllActivities(false); // Do not filter out future activities
     return NextResponse.json({ days, activities });
@@ -22,7 +25,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    await checkAuth();
+    await checkAuth(request);
     const { name, pointValue, dayId } = await request.json();
     const activity = await ActivityService.createActivity(name, parseInt(pointValue), dayId);
     return NextResponse.json({ success: true, activity });
@@ -33,7 +36,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    await checkAuth();
+    await checkAuth(request);
     const { id, name, pointValue } = await request.json();
     const activity = await ActivityService.updateActivity(id, name, parseInt(pointValue));
     return NextResponse.json({ success: true, activity });
@@ -44,7 +47,7 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    await checkAuth();
+    await checkAuth(request);
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     if (!id) throw new Error('ID required');

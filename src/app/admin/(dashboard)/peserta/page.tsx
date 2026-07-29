@@ -11,8 +11,9 @@ export default function PesertaPage() {
 
   const fetchPeserta = async (searchQuery = '') => {
     try {
+      const token = localStorage.getItem('admin_token');
       const res = await fetch(`/api/admin/peserta?search=${searchQuery}`, { 
-        credentials: 'include',
+        headers: { 'Authorization': `Bearer ${token}` },
         cache: 'no-store'
       });
       if (res.status === 401) {

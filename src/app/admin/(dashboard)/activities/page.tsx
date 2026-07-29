@@ -25,8 +25,9 @@ export default function AdminActivities() {
 
   const fetchData = async () => {
     try {
+      const token = localStorage.getItem('admin_token');
       const res = await fetch('/api/admin/activities', { 
-        credentials: 'include',
+        headers: { 'Authorization': `Bearer ${token}` },
         cache: 'no-store' 
       });
       if (res.status === 401) {
@@ -56,6 +57,7 @@ export default function AdminActivities() {
     
     setIsSubmitting(true);
     try {
+      const token = localStorage.getItem('admin_token');
       const isEditing = editingId !== null;
       const url = '/api/admin/activities';
       const method = isEditing ? 'PUT' : 'POST';
@@ -65,7 +67,10 @@ export default function AdminActivities() {
 
       const res = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body
       });
       const data = await res.json();
@@ -88,7 +93,11 @@ export default function AdminActivities() {
     if (!confirm('Yakin ingin menghapus aktivitas ini? Data absen terkait juga akan hilang (dari database lokal).')) return;
     
     try {
-      const res = await fetch(`/api/admin/activities?id=${id}`, { method: 'DELETE' });
+      const token = localStorage.getItem('admin_token');
+      const res = await fetch(`/api/admin/activities?id=${id}`, { 
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       

@@ -5,10 +5,9 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(request: Request) {
   const cookieStore = await cookies();
-  const token = cookieStore.get('admin_token');
+  const token = cookieStore.get('admin_token')?.value || request.headers.get('authorization')?.split(' ')[1];
   if (!token) {
-    const allCookies = cookieStore.getAll().map(c => c.name).join(', ');
-    return NextResponse.json({ error: `Unauthorized. Server sees cookies: [${allCookies}]` }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);

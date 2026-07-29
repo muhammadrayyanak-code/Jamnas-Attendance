@@ -9,6 +9,10 @@ export default function AdminLogin() {
   const router = useRouter();
   const { register, handleSubmit, formState: { isSubmitting } } = useForm();
   
+  useEffect(() => {
+    localStorage.removeItem('admin_token');
+  }, []);
+  
   const onSubmit = async (data: any) => {
     try {
       const res = await fetch('/api/admin/login', {
@@ -17,6 +21,12 @@ export default function AdminLogin() {
         body: JSON.stringify(data)
       });
       if (!res.ok) throw new Error('Username atau password salah');
+      const responseData = await res.json();
+      if (responseData.token) {
+        localStorage.setItem('admin_token', responseData.token);
+      }
+      
+      toast.success('Login berhasil!');
       router.push('/admin');
     } catch (error: any) {
       toast.error(error.message);

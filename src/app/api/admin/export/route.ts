@@ -6,7 +6,8 @@ import ExcelJS from 'exceljs';
 
 export async function GET(request: Request) {
   const cookieStore = await cookies();
-  if (!cookieStore.get('admin_token')) {
+  const token = cookieStore.get('admin_token')?.value || request.headers.get('authorization')?.split(' ')[1];
+  if (!token) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

@@ -10,6 +10,7 @@ export default function AdminDashboard() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [selectedDayId, setSelectedDayId] = useState<string>('all');
 
   const fetchDashboard = async (searchQuery = '') => {
     try {
@@ -82,6 +83,10 @@ export default function AdminDashboard() {
 
   const uniqueDays = Array.from(new Set(activities.map((a: any) => a.day.id)))
     .map(id => activities.find((a: any) => a.day.id === id)?.day);
+
+  const filteredActivities = selectedDayId === 'all' 
+    ? activities 
+    : activities.filter((act: any) => act.day.id === selectedDayId);
 
   return (
     <div className="space-y-6">
@@ -169,6 +174,19 @@ export default function AdminDashboard() {
       </div>
 
       <div className="glass rounded-2xl shadow-2xl border border-white/10 overflow-hidden mt-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-6 py-4 bg-background/50 border-b border-white/10 gap-4">
+          <h2 className="text-lg font-bold text-foreground">Data Kehadiran Peserta</h2>
+          <select 
+            value={selectedDayId} 
+            onChange={(e) => setSelectedDayId(e.target.value)}
+            className="px-4 py-2.5 rounded-xl bg-background border border-input focus:ring-2 focus:ring-primary focus:outline-none cursor-pointer text-sm font-medium shadow-sm w-full sm:w-auto"
+          >
+            <option value="all">Semua Hari (Tampilkan Semua)</option>
+            {uniqueDays.map((day: any) => (
+              <option key={day.id} value={day.id}>Hanya {day.name}</option>
+            ))}
+          </select>
+        </div>
         <div className="overflow-x-auto max-h-[60vh] relative">
           <table className="w-full text-left whitespace-nowrap border-collapse">
             <thead className="bg-background/80 backdrop-blur-md sticky top-0 z-20 text-muted-foreground text-xs uppercase font-extrabold tracking-wider border-b border-border shadow-sm">
@@ -177,7 +195,7 @@ export default function AdminDashboard() {
                   Informasi Peserta
                 </th>
                 <th className="px-5 py-5 text-center bg-background/80 border-r border-border min-w-[100px]">Total Poin</th>
-                {activities.map((act: any) => (
+                {filteredActivities.map((act: any) => (
                   <th key={act.id} className="px-4 py-5 text-center border-r border-border/50 min-w-[140px] max-w-[180px] whitespace-normal">
                     <div className="font-bold text-foreground leading-tight">{act.name}</div>
                     <div className="text-[10px] text-accent mt-1 bg-accent/10 px-2 py-0.5 rounded-full inline-block">+{act.pointValue} Poin</div>
@@ -201,7 +219,7 @@ export default function AdminDashboard() {
                       {p.totalPoints}
                     </span>
                   </td>
-                  {activities.map((act: any) => {
+                  {filteredActivities.map((act: any) => {
                     const attended = p.attendances?.some((a: any) => a.activityId === act.id);
                     return (
                       <td key={act.id} className="px-4 py-3 text-center border-r border-border/50">
@@ -221,7 +239,7 @@ export default function AdminDashboard() {
               ))}
               {participants.length === 0 && (
                 <tr>
-                  <td colSpan={activities.length + 2} className="px-6 py-12 text-center text-muted-foreground font-medium">
+                  <td colSpan={filteredActivities.length + 2} className="px-6 py-12 text-center text-muted-foreground font-medium">
                     Tidak ada data peserta yang cocok dengan kriteria pencarian.
                   </td>
                 </tr>

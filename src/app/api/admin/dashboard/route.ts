@@ -35,7 +35,7 @@ export async function GET(request: Request) {
 
     // Map attendances to participants
     participantsData = participantsData.map((p: any) => {
-      const pAttendances = attendancesData.filter((a: any) => a.nta === p.nta).map((a: any) => {
+      const pAttendances = attendancesData.filter((a: any) => a.name === p.name).map((a: any) => {
          const actInfo = activitiesMap[a.activityId];
          return {
             ...a,
@@ -58,8 +58,7 @@ export async function GET(request: Request) {
       participantsData = participantsData.filter((p: any) => 
         p.name.toLowerCase().includes(search) ||
         p.kwarcab.toLowerCase().includes(search) ||
-        p.regu.toLowerCase().includes(search) ||
-        p.nta.toLowerCase().includes(search)
+        p.regu.toLowerCase().includes(search)
       );
     }
 

@@ -42,7 +42,7 @@ export default function AdminDashboard() {
     // Header
     const actHeaders = data.activities.map((act: any) => `"${act.name}"`).join(",");
     let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += `NTA,Nama Lengkap,Kwarcab,Regu,Total Poin,${actHeaders}\n`;
+    csvContent += `Nama Lengkap,Kwarcab,Regu,Total Poin,${actHeaders}\n`;
     
     // Rows
     csvContent += data.participants.map((p: any) => {
@@ -50,7 +50,7 @@ export default function AdminDashboard() {
         const attended = p.attendances?.some((a: any) => a.activityId === act.id);
         return attended ? "Hadir" : "Tidak";
       }).join(",");
-      return `"${p.nta}","${p.name}","${p.kwarcab}","${p.regu}",${p.totalPoints},${actCells}`;
+      return `"${p.name}","${p.kwarcab}","${p.regu}",${p.totalPoints},${actCells}`;
     }).join("\n");
 
     const encodedUri = encodeURI(csvContent);
@@ -114,7 +114,7 @@ export default function AdminDashboard() {
             <div className="relative">
               <input 
                 type="text" 
-                placeholder="Cari NTA, Nama, Regu..." 
+                placeholder="Cari Nama atau Regu..." 
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-11 pr-4 py-3 rounded-xl border border-input/50 focus:ring-2 focus:ring-primary focus:outline-none bg-background/50 text-foreground shadow-inner" 
@@ -145,11 +145,10 @@ export default function AdminDashboard() {
             </thead>
             <tbody className="divide-y divide-border/50">
               {participants.map((p: any, index: number) => (
-                <tr key={p.nta} className="hover:bg-primary/5 transition-colors group">
+                <tr key={`${p.name}-${p.regu}`} className="hover:bg-primary/5 transition-colors group">
                   <td className="px-5 py-3 sticky left-0 z-10 bg-background/60 backdrop-blur-md border-r border-border group-hover:bg-background/80 transition-colors">
                     <div className="flex flex-col">
                       <span className="font-bold text-foreground text-sm">{p.name}</span>
-                      <span className="text-xs text-muted-foreground font-mono mt-0.5">{p.nta}</span>
                       <div className="flex items-center gap-1 text-xs text-primary/80 font-medium mt-1">
                         <MapPin className="w-3 h-3" /> {p.kwarcab} ({p.regu})
                       </div>

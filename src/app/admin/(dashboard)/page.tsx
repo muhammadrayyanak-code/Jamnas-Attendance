@@ -35,33 +35,34 @@ export default function AdminDashboard() {
     setLoading(true);
     fetchDashboard(search);
   };
+  const [isExporting, setIsExporting] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
 
-  const exportCSV = () => {
-    if (!data?.participants || !data?.activities) return;
-    
-    // Header
-    const actHeaders = data.activities.map((act: any) => `"${act.name}"`).join(",");
-    let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += `Nama Lengkap,Kwarcab,Regu,Total Poin,${actHeaders}\n`;
-    
-    // Rows
-    csvContent += data.participants.map((p: any) => {
-      const actCells = data.activities.map((act: any) => {
-        const attended = p.attendances?.some((a: any) => a.activityId === act.id);
-        return attended ? "Hadir" : "Tidak";
-      }).join(",");
-      return `"${p.name}","${p.kwarcab}","${p.regu}",${p.totalPoints},${actCells}`;
-    }).join("\n");
-
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "matrix_presensi_kegiatan_scout.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const downloadExcel = async (dayId: string) => {
+    try {
+      setIsExporting(true);
+      setShowExportMenu(false);
+      
+      const res = await fetch(`/api/admin/export?dayId=${dayId}`);
+      if (!res.ok) throw new Error('Gagal men-generate Excel');
+      
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Laporan_Kehadiran_${dayId === 'all' ? 'Semua_Hari' : 'Harian'}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast.success('Laporan Excel berhasil diunduh!');
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setIsExporting(false);
+    }
   };
-
   if (loading) {
     return (
       <div className="flex justify-center items-center h-[70vh]">
@@ -76,6 +77,9 @@ export default function AdminDashboard() {
   const activities = data?.activities || [];
   const participants = data?.participants || [];
 
+  const uniqueDays = Array.from(new Set(activities.map((a: any) => a.day.id)))
+    .map(id => activities.find((a: any) => a.day.id === id)?.day);
+
   return (
     <div className="space-y-6">
       <Toaster position="top-right" />
@@ -84,9 +88,44 @@ export default function AdminDashboard() {
           <h1 className="text-3xl font-extrabold text-foreground drop-shadow-sm">Matrix Kehadiran</h1>
           <p className="text-muted-foreground font-medium mt-1">Pantau rekap kehadiran seluruh peserta di semua kegiatan wajib.</p>
         </div>
-        <button onClick={exportCSV} className="flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-xl hover:bg-primary/90 transition-all shadow-md hover:shadow-lg font-bold">
-          <Download className="w-5 h-5" /> Export Matrix CSV
-        </button>
+        
+        <div className="relative">
+          <button 
+            onClick={() => setShowExportMenu(!showExportMenu)} 
+            disabled={isExporting}
+            className="flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-xl hover:bg-primary/90 transition-all shadow-md hover:shadow-lg font-bold disabled:opacity-50"
+          >
+            {isExporting ? (
+               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            ) : (
+               <Download className="w-5 h-5" /> 
+            )}
+            {isExporting ? 'Memproses...' : 'Download Laporan (Excel)'}
+          </button>
+          
+          {showExportMenu && (
+            <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-zinc-800 rounded-xl shadow-xl border border-gray-200 dark:border-zinc-700 overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
+              <div className="px-3 py-2 border-b border-gray-100 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800/50">
+                <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Pilih Data</span>
+              </div>
+              <button 
+                onClick={() => downloadExcel('all')}
+                className="w-full text-left px-4 py-3 text-sm font-medium hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors flex items-center justify-between"
+              >
+                Semua Hari (Lengkap)
+              </button>
+              {uniqueDays.map((day: any) => (
+                <button 
+                  key={day.id}
+                  onClick={() => downloadExcel(day.id)}
+                  className="w-full text-left px-4 py-3 text-sm font-medium hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors border-t border-gray-50 dark:border-zinc-700/50"
+                >
+                  {day.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

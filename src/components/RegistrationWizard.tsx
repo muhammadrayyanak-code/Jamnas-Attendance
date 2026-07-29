@@ -280,7 +280,7 @@ export default function RegistrationWizard() {
                         placeholder=" "
                       />
                       <label htmlFor="alergi" className="absolute text-sm text-muted-foreground duration-300 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] start-12 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-primary pointer-events-none">
-                        Alergi Makanan (Opsional)
+                        Alergi Makanan
                       </label>
                       <AlertCircle className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground peer-focus:text-primary transition-colors w-5 h-5 pointer-events-none" />
                     </div>

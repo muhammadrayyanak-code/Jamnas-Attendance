@@ -44,7 +44,10 @@ export default function AdminDashboard() {
       setShowExportMenu(false);
       
       const res = await fetch(`/api/admin/export?dayId=${dayId}`);
-      if (!res.ok) throw new Error('Gagal men-generate Excel');
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Gagal men-generate Excel (Error ' + res.status + ')');
+      }
       
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);

@@ -54,29 +54,33 @@ export async function POST(req: Request) {
     // Send to Google Sheets (Webhook)
     const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
     if (webhookUrl) {
-      try {
-        const sheetRes = await fetch(webhookUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            action: 'attendance',
-            name: data.name,
-            kwarcab: data.kwarcab,
-            regu: data.regu,
-            activityId: data.activityId,
-            activityName: activity.name
-          }),
-        });
-        
-        const sheetResult = await sheetRes.json();
-        if (sheetResult.error) {
-          console.warn("Google Sheets Error:", sheetResult.error);
-        }
-      } catch (sheetErr) {
-        console.error("Failed to sync with Google Sheets:", sheetErr);
-      }
+      // Fire and forget with a short timeout so it doesn't block the response during high traffic
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+      
+      fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'attendance',
+          name: data.name,
+          kwarcab: data.kwarcab,
+          regu: data.regu,
+          activityId: data.activityId,
+          activityName: activity.name
+        }),
+        signal: controller.signal
+      })
+      .then(res => res.json())
+      .then(sheetResult => {
+        if (sheetResult.error) console.warn("Google Sheets Error:", sheetResult.error);
+      })
+      .catch(sheetErr => {
+        console.error("Failed to sync with Google Sheets (or timeout):", sheetErr.message);
+      })
+      .finally(() => clearTimeout(timeoutId));
     }
 
     return NextResponse.json({ 

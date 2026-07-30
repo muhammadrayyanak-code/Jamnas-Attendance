@@ -3,6 +3,8 @@ import { EventDayService } from '@/lib/services/EventDayService';
 import { ActivityService } from '@/lib/services/ActivityService';
 import { SeedService } from '@/lib/services/SeedService';
 
+export const revalidate = 60; // Cache for 60 seconds (ISR)
+
 export async function GET() {
   try {
     await SeedService.seedDaysIfEmpty();
